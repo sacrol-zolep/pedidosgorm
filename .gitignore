@@ -1,0 +1,11 @@
+# Binarios de servicios
+pedidosApp
+app/bin/pedidosApp
+
+# Archivos de configuración local
+.env
+*.env
+**/.env
+.sum
+*.sum
+**/.sum
