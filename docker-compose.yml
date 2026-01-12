@@ -4,6 +4,7 @@ volumes:
 services:
     postgres-pedidos-service:
         image: postgres:16
+        container_name: pg-test-pedidos
         environment:
             POSTGRES_USER: ${DB_USER}
             POSTGRES_PASSWORD: ${DB_PASSWORD}

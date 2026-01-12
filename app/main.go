@@ -1,39 +1,22 @@
 package main
 
 import (
+	"app_pedidos/db"
 	"app_pedidos/models"
-	"fmt"
+	"context"
 	"log"
-	"os"
 
 	"github.com/joho/godotenv"
-	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
-var dataBase *gorm.DB
-
 func main() {
 	loadEnv()
-	dbHost := os.Getenv("DB_HOST")
-	dbPuerto := os.Getenv("DB_PORT")
-	dbUsuario := os.Getenv("DB_USER")
-	dbPw := os.Getenv("DB_PASSWORD")
-	dbNombre := os.Getenv("DB_NAME")
-
-	fmt.Println("Conectando con " + dbHost + ":" + dbPuerto)
-	dsn := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable", dbUsuario, dbPw, dbHost, dbPuerto, dbNombre)
-	dataBase, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
-
-	if err != nil {
-		fmt.Printf("Error en conexion a la base de datos")
-		panic(err)
-	} else {
-		fmt.Println("Concexion con base de datos exitosa!")
-	}
-
-	dataBase.AutoMigrate(&models.Cliente{})
-	dataBase.AutoMigrate(&models.Contacto{})
+	db.Connect()
+	db.Database.AutoMigrate(&models.Cliente{})
+	db.Database.AutoMigrate(&models.Contacto{})
+	NuevoCliente()
+	NuevoContacto()
 }
 
 func loadEnv() {
@@ -41,4 +24,41 @@ func loadEnv() {
 	if err != nil {
 		log.Fatal("Error encontrando .env file")
 	}
+}
+
+func NuevoCliente() {
+	cliente := models.Cliente{
+		Nombre1:       "Juan",
+		Apellido1:     "Perez",
+		TipoDocumento: "DNI",
+		Documento:     "2012",
+	}
+
+	ctx := context.Background()
+	err := gorm.G[models.Cliente](db.Database).Create(ctx, &cliente)
+
+	if err != nil {
+		panic(err)
+	} else {
+		log.Println("Cliente creado correctamente")
+	}
+
+}
+
+func NuevoContacto() {
+	contacto := models.Contacto{
+		TipoDato:   "correo",
+		Dato:       "jaun@test.com",
+		ClienteDoc: "2012",
+	}
+
+	ctx := context.Background()
+	err := gorm.G[models.Contacto](db.Database).Create(ctx, &contacto)
+
+	if err != nil {
+		panic(err)
+	} else {
+		log.Println("Contacto creado correctamente")
+	}
+
 }
